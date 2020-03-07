@@ -82,17 +82,19 @@ class Controller:
             self._db.insert(entry.get_data())
 
     def search(self, data: str) -> None:
-        result = self._db.query(data)
+        results = self._db.query(data)
 
-        if result:
-            word = result[0].get("word")
-            definition = result[0].get("definition")
+        if not results:
+            print("Unable to find word in db")
+            return
+
+        for result in results:
+            word = result.get("word")
+            definition = result.get("definition")
 
             print("Word       : ", word)
             print("Definition : ", definition)
-
-        else:
-            print("Unable to find word in db")
+            print("\n")
 
 
 if __name__ == "__main__":
