@@ -45,8 +45,23 @@ class Database:
         query = tinydb.Query()
         return self.db.search(query.word.matches(data))
 
+    def get(self, data: str) -> Optional[tinydb.database.Document]:
+        """Returns the document object"""
+        return self.db.get(tinydb.Query().word == data)
+
     def all(self) -> Optional[List[Dict]]:
         """return all entries from the db"""
         return self.db.all()
 
+    def update(self, entry: Dict) -> None:
+        """updates the entry in the database"""
+        self.db.update(entry)
+
+    def delete(self, data: str) -> None:
+        """deletes the data from the database"""
+        self.db.remove(tinydb.Query().word == data)
+
+    def purge(self) -> None:
+        """removes the entire db"""
+        self.db.purge()
 
