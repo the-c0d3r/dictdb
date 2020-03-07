@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2017 by the-c0d3r
+# Author: the-c0d3r
+#
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation; either version 3, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+
+import argparse
+import tinydb
+import re
+
+from lib.db import Database
+from lib.entry import Entry
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="Dictionary Database")
+    parser.add_argument("-i", "--interactive", help="interactive mode")
+    parser.add_argument("-s", "--search", help="search word")
+    parser.add_argument("-a", "--add", help="add new word")
+    parser.add_argument("-l", "--list", action="store_true", help="list all words (tip: use 'more')")
+    # TODO: add official dictionary lookup
+
+    return parser
+
+
+class Controller:
+    def __init__(self):
+        self._db = Database()
+
+        self.pattern = re.compile(r"(\S+):\s?(.+)")
+
+        parser = build_parser()
+        args = parser.parse_args()
+        if not (args.interactive or args.search or args.add or args.list):
+            parser.print_help()
+            exit()
+
+        if args.add:
+            self.add(args.add)
+
+        if args.search:
+            self.search(args.search)
+
+        if args.interactive:
+            self.interactive()
+
+        if args.list:
+            self.list()
+
+    def interactive(self) -> None:
+        pass
+
+    def list(self) -> None:
+        words = self._db.all()
+        for pair in words:
+            word = pair.get("word")
+            definition = pair.get("definition")
+
+            print("Word       : ", word)
+            print("Definition : ", definition)
+            print("\n")
+
+    def add(self, data: str) -> None:
+        try:
+            [[word, meaning]] = self.pattern.findall(data)
+        except ValueError:
+            # means parsing failed
+            print("--add requires the data in the following format")
+            print("--add 'word: (type) meaning'")
+            exit()
+        else:
+            entry = Entry(word = word, meaning = meaning)
+            self._db.insert(entry.get_data())
+
+    def search(self, data: str) -> None:
+        result = self._db.query(data)
+
+        if result:
+            word = result[0].get("word")
+            definition = result[0].get("definition")
+
+            print("Word       : ", word)
+            print("Definition : ", definition)
+
+        else:
+            print("Unable to find word in db")
+
+
+if __name__ == "__main__":
+    # import code; code.interact(local=locals())
+    Controller()
+
