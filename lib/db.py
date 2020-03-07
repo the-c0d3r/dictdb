@@ -43,7 +43,7 @@ class Database:
         :returns : a dictionary/json object for the matching result
         """
         query = tinydb.Query()
-        return self.db.search(query.matches(data))
+        return self.db.search(query.word.matches(data))
 
     def all(self) -> Optional[List[Dict]]:
         """return all entries from the db"""
