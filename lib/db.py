@@ -55,7 +55,7 @@ class Database:
 
     def update(self, entry: Dict) -> None:
         """updates the entry in the database"""
-        self.db.update(entry)
+        self.db.update(entry.get_data())
 
     def delete(self, data: str) -> None:
         """deletes the data from the database"""

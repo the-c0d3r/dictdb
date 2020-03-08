@@ -91,16 +91,13 @@ class Controller:
             print("\n")
 
     def add(self, data: str) -> None:
-        try:
-            [[word, definition]] = self.pattern.findall(data)
-        except ValueError:
+        entry = Entry(data)
+        if not entry.is_valid():
             # means parsing failed
             print("--add requires the data in the following format")
-            print("--add 'word: (type) definition'")
+            print("--add 'word : (type) definition'")
             exit()
-        else:
-            entry = Entry(word = word, definition = definition)
-            self._db.insert(entry.get_data())
+        self._db.insert(entry.get_data())
 
     def search(self, data: str) -> None:
         results = self._db.query(data)
@@ -145,15 +142,12 @@ class Controller:
         # acquire the new content from the editor
         raw = editor.edit(contents=f"{word}: {definition}")
 
-        try:
-            [[word, definition]] = self.pattern.findall(raw.decode().strip())
-        except ValueError:
+        entry = Entry(raw.decode().strip())
+        if not entry.is_valid():
             print("Unable to parse the edited content, it must be in the following format, type is optional")
-            print("word: (type) definition")
+            print("word : (type) definition")
             return
-        else:
-            data = {'word': word, 'definition': definition}
-            self._db.update(data)
+        self._db.update(entry)
 
 
 if __name__ == "__main__":

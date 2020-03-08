@@ -1,20 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import re
 from typing import Dict
 
 
 class Entry:
     """Dictionary Entry object"""
+    pattern = re.compile(r"(\S+):\s?(.+)")
 
-    def __init__(self, word: str, definition: str):
+    def __init__(self, data: str) -> None:
         """
         Initialize the entry object
-        :param word: the word to store
-        :param definition: definition of the word
+        :param data: string in the following format
+        word : meaning
         """
-        self._word = word
-        self._definition = definition
+        [[word, definition]] = self.pattern.findall(data)
+        self._word = word.strip()
+        self._definition = definition.strip()
+
+    def is_valid(self):
+        return self._word != "" and self._definition != ""
 
     def get_data(self) -> Dict:
         """Function to convert it into data format for db insertion"""
