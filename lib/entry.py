@@ -18,7 +18,7 @@ class Entry:
         self._word = word.strip()
         self._definition = definition.strip()
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         return self._word != "" and self._definition != ""
 
     def get_data(self) -> Dict:

@@ -16,19 +16,19 @@
 # BUG: somehow it seems very slow to launch on first try, is python trying to create cache and the process is too slow??
 
 import argparse
-import editor
-import tinydb
 import re
+
+import editor
 
 from lib.db import Database
 from lib.entry import Entry
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="Dictionary Database")
-    parser.add_argument("-i", "--interactive", help="interactive mode")
-    parser.add_argument("-s", "--search", help="search word")
-    parser.add_argument("-a", "--add", help="add new word")
+    parser = argparse.ArgumentParser(prog = "Dictionary Database")
+    parser.add_argument("-i", "--interactive", help = "interactive mode")
+    parser.add_argument("-s", "--search", help = "search word")
+    parser.add_argument("-a", "--add", help = "add new word")
     parser.add_argument("-d", "--delete", help="delete word")
     parser.add_argument("-m", "--modify", help="modify the existing definitions")
     parser.add_argument("-l", "--list", action="store_true", help="list all words (tip: use 'more')")
@@ -147,7 +147,7 @@ class Controller:
             print("Unable to parse the edited content, it must be in the following format, type is optional")
             print("word : (type) definition")
             return
-        self._db.update(entry)
+        self._db.update(entry.get_data())
 
 
 if __name__ == "__main__":
