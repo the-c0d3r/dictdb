@@ -1,4 +1,3 @@
-import os
 from argparse import Namespace
 from typing import Optional, Dict
 
@@ -35,9 +34,6 @@ class Controller:
         if args.delete:
             self.delete(args.delete)
 
-        if args.load:
-            self.load(args.load)
-
     def interactive(self) -> None:
         """
         Launch editor with all the entries
@@ -60,19 +56,6 @@ class Controller:
             entry = Entry(line)
             if entry.is_valid():
                 self.db.insert(entry.get_dict())
-
-    def load(self, filename: str) -> None:
-        """
-        import the custom dictionary file to database
-        :param filename: the filename to import
-        """
-        if not os.path.exists(filename):
-            print("Error: file not found")
-            return
-        # todo: read the file, strip '\n' and parse into entry, add to db
-        with open(filename, "r") as fp:
-            content = [line.strip("\n") for line in fp.readlines()]
-            self.load_content(content)
 
     def load_content(self, content: [str]) -> None:
         """load the given content"""

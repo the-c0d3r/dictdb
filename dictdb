@@ -54,6 +54,7 @@ if __name__ == "__main__":
     if not sys.stdout.isatty():
         args.list = True
         controller.interact(args)
+        exit()
 
     # if stdin is not terminal (redirection or pipe), import the content
     elif not sys.stdin.isatty():
@@ -61,7 +62,11 @@ if __name__ == "__main__":
         for line in fileinput.input():
             content.append(line.strip())
         controller.load_content(content)
+        exit()
 
     # if no arguments and not stdin/stdout piped, print help
     elif not any(args_list):
         parser.print_help()
+        exit()
+
+    controller.interact(args)
