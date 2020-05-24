@@ -70,6 +70,8 @@ dictdb < dict.txt
 ```
 Import `dict.txt` to the database.
 
+**WARNING: Importing will purge existing data**
+
 ```bash
 dictdb > export.txt
 ```

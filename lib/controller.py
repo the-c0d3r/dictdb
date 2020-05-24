@@ -59,6 +59,7 @@ class Controller:
 
     def load_content(self, content: [str]) -> None:
         """load the given content"""
+        self.db.purge()
         if len(content) == 0:
             print("[-] Nothing to load")
             return
