@@ -21,12 +21,12 @@ class TestDatabase:
     def test_count(self, db):
         assert db.count() == 0
 
-        db.insert({"test": "test"})
+        db.insert({"word": "test", "definition": "test abc"})
         assert db.count() == 1
 
     def test_insert(self, db):
         assert db.insert(42) == False
-        assert db.insert({"test": "test"}) == True
+        assert db.insert({"word": "test", "definition": "test"}) == True
 
     def test_query(self, db):
         db.insert({"word": "test", "definition": "test abc"})
@@ -40,6 +40,7 @@ class TestDatabase:
 
     def test_update(self, db):
         db.insert({"word": "test", "definition": "test abc"})
+        db.insert({"word": "abc", "definition": "def"})
         db.update({"word": "test", "definition": "new def"})
 
         result = db.query("test")[0]

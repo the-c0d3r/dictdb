@@ -32,20 +32,14 @@ class Database:
         :param data: the data to write to database
         data would be a dictionary object to write into the class
 
-        Designated data format as follows
-        {'word': { 'definition' : 'a word', 'type' : 'noun' } }
-           ^                          ^                 ^
-           |                          |                 |
-        the dictionary entry          |                 |
-                                the definition          |
-                                                type of word aka noun, verb
+        Designated data format as follows, e.g.
+        {'word': 'example', 'definition' : 'be illustrated'}
         """
-        try:
-            self.db.insert(data)
-        except ValueError:
+        if not isinstance(data, dict) or not data.get("word") or not data.get("definition"):
             return False
-        else:
-            return True
+
+        self.db.insert(data)
+        return True
 
     def query(self, data: str) -> Optional[Dict]:
         """
@@ -61,7 +55,8 @@ class Database:
 
     def update(self, entry: Dict) -> None:
         """updates the entry in the database"""
-        self.db.update(entry)
+        query = tinydb.Query()
+        self.db.upsert(entry, query.word == entry.get("word"))
 
     def delete(self, data: str) -> None:
         """deletes the data from the database"""
