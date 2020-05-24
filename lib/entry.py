@@ -4,7 +4,7 @@ from typing import Dict
 
 class Entry:
     """Dictionary Entry object"""
-    pattern = re.compile(r"(.+)\s?:\s?(.+)")
+    pattern = re.compile(r"([^:]*)\s?:\s?(.+)")
 
     def __init__(self, data: str) -> None:
         """
@@ -46,4 +46,4 @@ class Entry:
 
     def str(self) -> str:
         """return str"""
-        return f"{self._word}: {self._definition}"
+        return f"{self._word} : {self._definition}"

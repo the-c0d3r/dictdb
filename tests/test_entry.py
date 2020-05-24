@@ -51,4 +51,4 @@ class TestEntry:
         assert entry.is_valid()
 
     def test_str(self, entry):
-        assert entry.str() == "test: word definition"
+        assert entry.str() == "test : word definition"
