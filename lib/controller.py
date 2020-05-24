@@ -43,7 +43,7 @@ class Controller:
         entries = self._db.all()
         lines = []
         for line in entries:
-            entry = Entry(line)
+            entry = self.dict2entry(line)
             lines.append(entry.get_str())
 
         raw = editor.edit(contents = "\n".join(lines))
@@ -106,16 +106,12 @@ class Controller:
         results = self._db.query(data)
 
         if not results:
-            print("Unable to find word in db")
+            print("[-] Unable to find word in db")
             return
 
         for result in results:
-            word = result.get("word")
-            definition = result.get("definition")
-
-            print("Word       : ", word)
-            print("Definition : ", definition)
-            print("\n")
+            entry = self.dict2entry(result)
+            print(entry.get_str())
 
     def delete(self, data: str) -> None:
         """Function to delete the entry"""
@@ -128,30 +124,32 @@ class Controller:
         return self._db.delete(data)
 
     def edit(self, data: str) -> None:
-        """Function to modify the existing definitions"""
-        # BUG: this function seem to overwrite the existing entries and create two copies
+        """
+        Function to modify the existing definitions
+        If there are multiple word matches, all of them will be present in the editor
+        If there is no match, empty editor will launch, and allow you to save new entry
+        """
         results = self._db.query(data)
 
-        if not results:
-            print("Unable to find word in db")
-            return
+        content = []
+        for word in results:
+            entry = self.dict2entry(word)
+            content.append(entry.get_str())
 
-        if len(results) > 1:
-            print(f"Multiple results found for {data}, please retry with exact word")
-            return self.search(data)
-
-        word = results[0].get("word")
-        definition = results[0].get("definition")
+        # Launch editor with the matched entries
+        raw = editor.edit(contents = "\n".join(content))
 
         # acquire the new content from the editor
-        raw = editor.edit(contents = f"{word}: {definition}")
+        content = raw.decode().strip().split("\n")
 
-        entry = Entry(raw.decode().strip())
-        if not entry.is_valid():
-            print("Unable to parse the edited content, it must be in the following format, type is optional")
-            print("word : (type) definition")
-            return
-        self._db.update(entry.get_dict())
+        # Update existing entries or insert new entry
+        for line in content:
+            entry = Entry(line)
+            if not entry.is_valid():
+                print(f"[-] Unable to parse the line: '{line}'")
+                print("[-] word : (type) definition")
+            else:
+                self._db.update(entry.get_dict())
 
     def dict2entry(self, data: dict) -> Optional[Entry]:
         word = data.get("word")
