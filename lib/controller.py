@@ -11,9 +11,12 @@ from lib.entry import Entry
 class Controller:
     """Class to control the dictdb"""
 
-    def __init__(self, args: Namespace) -> None:
-        self._db = Database()
+    def __init__(self) -> None:
+        """Initialize the controller"""
+        self.db = Database()
 
+    def interact(self, args: Namespace) -> None:
+        """start the interaction with the database"""
         if args.add:
             self.add(args.add)
 
@@ -40,7 +43,7 @@ class Controller:
         Launch editor with all the entries
         """
         # load all the entries into editor
-        entries = self._db.all()
+        entries = self.db.all()
         lines = []
         for line in entries:
             entry = self.dict2entry(line)
@@ -51,12 +54,12 @@ class Controller:
         # update all the entries from editor to db
         lines = [line.strip("\n") for line in raw.decode().strip().split("\n")]
         # purge db and overwrite with current copy
-        self._db.purge()
+        self.db.purge()
 
         for line in lines:
             entry = Entry(line)
             if entry.is_valid():
-                self._db.insert(entry.get_dict())
+                self.db.insert(entry.get_dict())
 
     def load(self, filename: str) -> None:
         """
@@ -69,6 +72,13 @@ class Controller:
         # todo: read the file, strip '\n' and parse into entry, add to db
         with open(filename, "r") as fp:
             content = [line.strip("\n") for line in fp.readlines()]
+            self.load_content(content)
+
+    def load_content(self, content: [str]) -> None:
+        """load the given content"""
+        if len(content) == 0:
+            print("[-] Nothing to load")
+            return
 
         print(f"[+] Loaded {len(content)} lines")
 
@@ -76,15 +86,15 @@ class Controller:
         for line in content:
             entry = Entry(line)
             if entry.is_valid():
-                self._db.insert(entry.get_dict())
+                self.db.insert(entry.get_dict())
                 imported += 1
 
         print(f"[+] Imported {imported} entries")
-        print(f"[+] Dictionary size : {self._db.count()}")
+        print(f"[+] Dictionary size : {self.db.count()}")
 
     def list(self) -> None:
         """list all the entries in the database"""
-        words = self._db.all()
+        words = self.db.all()
         if not words:
             print("[-] No words found in the database")
             return
@@ -100,10 +110,10 @@ class Controller:
             print("--add requires the data in the following format")
             print("--add 'word : (type) definition'")
             exit()
-        self._db.insert(entry.get_dict())
+        self.db.insert(entry.get_dict())
 
     def search(self, data: str) -> None:
-        results = self._db.query(data)
+        results = self.db.query(data)
 
         if not results:
             print("[-] Unable to find word in db")
@@ -115,13 +125,13 @@ class Controller:
 
     def delete(self, data: str) -> None:
         """Function to delete the entry"""
-        results = self._db.query(data)
+        results = self.db.query(data)
 
         if not results:
             print("Unable to find word in db")
             return
 
-        return self._db.delete(data)
+        return self.db.delete(data)
 
     def edit(self, data: str) -> None:
         """
@@ -129,7 +139,7 @@ class Controller:
         If there are multiple word matches, all of them will be present in the editor
         If there is no match, empty editor will launch, and allow you to save new entry
         """
-        results = self._db.query(data)
+        results = self.db.query(data)
 
         content = []
         for word in results:
@@ -149,7 +159,7 @@ class Controller:
                 print(f"[-] Unable to parse the line: '{line}'")
                 print("[-] word : (type) definition")
             else:
-                self._db.update(entry.get_dict())
+                self.db.update(entry.get_dict())
 
     def dict2entry(self, data: dict) -> Optional[Entry]:
         word = data.get("word")
