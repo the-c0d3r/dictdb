@@ -15,6 +15,8 @@
 
 
 import argparse
+import fileinput
+import sys
 
 from lib.controller import Controller
 
@@ -32,13 +34,11 @@ dev: the-c0d3r
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog = banner)
     parser.add_argument("-i", "--interactive", action = "store_true", help = "interactive mode for all entries")
-    parser.add_argument("-l", "--load", help = "load the file into database")
     parser.add_argument("-s", "--search", help = "search word")
     parser.add_argument("-a", "--add", help = "add new word")
     parser.add_argument("-d", "--delete", help = "delete word")
     parser.add_argument("-e", "--edit", help = "edit the existing definitions")
-    parser.add_argument("-ls", "--list", default = True, action = "store_true", help = "list all words")
-    # TODO: add official dictionary lookup
+    parser.add_argument("-l", "--list", action = "store_true", help = "list all words")
     return parser
 
 
@@ -46,14 +46,22 @@ if __name__ == "__main__":
     parser = build_parser()
     args = parser.parse_args()
 
-    args_list = [
-        args.interactive, args.search, args.add, args.delete, args.list, args.edit,
-        args.load
-    ]
+    args_list = [args.interactive, args.search, args.add, args.delete, args.list, args.edit]
 
-    if not any(args_list):
-        print(banner)
+    controller = Controller()
+
+    # if stdout is not terminal (redirection or pipe), list everything
+    if not sys.stdout.isatty():
+        args.list = True
+        controller.interact(args)
+
+    # if stdin is not terminal (redirection or pipe), import the content
+    elif not sys.stdin.isatty():
+        content = []
+        for line in fileinput.input():
+            content.append(line.strip())
+        controller.load_content(content)
+
+    # if no arguments and not stdin/stdout piped, print help
+    elif not any(args_list):
         parser.print_help()
-        exit()
-
-    Controller(args)
