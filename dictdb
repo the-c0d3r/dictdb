@@ -19,26 +19,25 @@ import argparse
 from lib.controller import Controller
 
 banner = r"""
-      _ _      _      _ _     
-     | (_)    | |    | | |    
-   __| |_  ___| |_ __| | |__  
-  / _` | |/ __| __/ _` | '_ \ 
- | (_| | | (__| || (_| | |_) |
-  \__,_|_|\___|\__\__,_|_.__/ 
+       ___      __      ____  
+  ____/ (_)____/ /_____/ / /_ 
+ / __  / / ___/ __/ __  / __ \
+/ /_/ / / /__/ /_/ /_/ / /_/ /
+\__,_/_/\___/\__/\__,_/_.___/ 
     
 dev: the-c0d3r
 """
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog = "Dictionary Database")
+    parser = argparse.ArgumentParser(prog = banner)
     parser.add_argument("-i", "--interactive", action = "store_true", help = "interactive mode for all entries")
-    parser.add_argument("-import", "--import-file", help = "import the file")
+    parser.add_argument("-l", "--load", help = "load the file into database")
     parser.add_argument("-s", "--search", help = "search word")
     parser.add_argument("-a", "--add", help = "add new word")
     parser.add_argument("-d", "--delete", help = "delete word")
     parser.add_argument("-e", "--edit", help = "edit the existing definitions")
-    parser.add_argument("-ls", "--list", action = "store_true", help = "list all words (tip: use 'more')")
+    parser.add_argument("-ls", "--list", default = True, action = "store_true", help = "list all words")
     # TODO: add official dictionary lookup
     return parser
 
@@ -49,7 +48,7 @@ if __name__ == "__main__":
 
     args_list = [
         args.interactive, args.search, args.add, args.delete, args.list, args.edit,
-        args.import_file
+        args.load
     ]
 
     if not any(args_list):

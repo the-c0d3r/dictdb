@@ -32,8 +32,8 @@ class Controller:
         if args.delete:
             self.delete(args.delete)
 
-        if args.import_file:
-            self.import_file(args.import_file)
+        if args.load:
+            self.load(args.load)
 
     def interactive(self) -> None:
         """
@@ -58,7 +58,7 @@ class Controller:
             if entry.is_valid():
                 self._db.insert(entry.get_dict())
 
-    def import_file(self, filename: str) -> None:
+    def load(self, filename: str) -> None:
         """
         import the custom dictionary file to database
         :param filename: the filename to import
