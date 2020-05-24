@@ -52,7 +52,7 @@ optional arguments:
 
 `dictdb -s word` will do a search for the word. This will print the word if matched, it also support partial match.
 
-`dictdb -a word` this means add new word, but the "word" here needs to follow the standard data format declared above.
+`dictdb -a word` this means add new word, but the "word" here needs to follow the standard data format declared above. e.g. `dictdb -a "test:definition"
    
 `dictdb -d word` will delete the word if it exists.
 
@@ -98,10 +98,6 @@ Export the database content into `export.txt`
 - email the summary of new words
 - Able to search the popular dictionaries for definition
 - Randomly show word of the day from words you have entered into the database
-
-
-## Usage
-
 
 
 > "Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away." ~ Antoine de Saint-Exupery
