@@ -123,11 +123,11 @@ class Controller:
         If there are multiple word matches, all of them will be present in the editor
         If there is no match, empty editor will launch, and allow you to save new entry
         """
-        results = self.db.query(data)
-
+        original_words = []
         content = []
-        for word in results:
+        for word in self.db.query(data):
             entry = self.dict2entry(word)
+            original_words.append(entry.word)
             content.append(entry.get_str())
 
         # Launch editor with the matched entries
@@ -136,6 +136,8 @@ class Controller:
         # acquire the new content from the editor
         content = raw.decode().strip().split("\n")
 
+        new_words = []
+
         # Update existing entries or insert new entry
         for line in content:
             entry = Entry(line)
@@ -143,7 +145,14 @@ class Controller:
                 print(f"[-] Unable to parse the line: '{line}'")
                 print("[-] word : (type) definition")
             else:
+                new_words.append(entry.word)
                 self.db.update(entry.get_dict())
+
+        # Check for deletions
+        if len(new_words) != len(original_words):
+            diff = set(original_words) - set(new_words)
+            for entry in diff:
+                self.db.delete(entry)
 
     def dict2entry(self, data: dict) -> Optional[Entry]:
         word = data.get("word")
