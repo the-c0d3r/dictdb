@@ -16,7 +16,7 @@ class TestDatabase:
 
         with pytest.raises(Exception) as exec_info:
             db = Database("/usr/bin/db.json")
-        assert "not permitted" in str(exec_info.value)
+        assert "not permitted" in str(exec_info.value) or "Permission denied" in str(exec_info.value)
 
     def test_count(self, db):
         assert db.count() == 0
@@ -25,8 +25,8 @@ class TestDatabase:
         assert db.count() == 1
 
     def test_insert(self, db):
-        assert db.insert(42) == False
-        assert db.insert({"word": "test", "definition": "test"}) == True
+        assert db.insert(42) is False
+        assert db.insert({"word": "test", "definition": "test"}) is True
 
     def test_query(self, db):
         db.insert({"word": "test", "definition": "test abc"})
